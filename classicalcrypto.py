@@ -17,18 +17,23 @@ lookupa0 = {chr(64+i):i-1 for i in range(1,27)}   # A:0, B:1, etc
 def normalize(text, norm=[]):
   'normalizes input based upon arguments'
   if 'upper' in norm and text.isupper() == False:
-    print "Converting to uppercase..."
+    print "WARN: Converting to uppercase..."
     text=text.upper()
   if 'alpha' in norm and text.isalpha() == False:
-    print "Stripping non-alpha..."
+    print "WARN: Stripping non-alpha..."
     text=filter(str.isalpha, text)
   return text
 
+def repeat_fill(text_in, length):
+  'repeat (or truncate) a string to a new length'
+  a, b = divmod(length, len(text_in))
+  return text_in * a + text_in[:b]
 
-# Caeser
+
+
+# Caeser cipher
 def caeser(text, rotate=None):
-  'Rotate each character X times.  Brute force rot0-rot26 if rotate arg is not specified.'
-  
+  'Rotate each character X times.  Brute force rot0-rot26 if rotate arg is not specified.'  
   n_text = normalize(text, ['upper','alpha'] ) #Normalize input
 
   # Rotate once if rotate arg is specified, othersise all combinations
@@ -42,13 +47,14 @@ def caeser(text, rotate=None):
 
 
 
-
-
-
-
+# OTP and vegenere ciphers  
+def otp_encrypt(cleartext, key, lookup_fwd=lookupa0, lookup_rev=lookup0a):
+  "sample usage: ciphertext = otp_encrypt('HELLO', 'XMCKL', lookupa1, lookup1a)"
   
-def otp_encrypt(cleartext, key, lookup_fwd, lookup_rev):
-  "sample usage: ciphertext = otp_encrypt('HELLO', 'XMCKL', lookupa0, lookup0a)"
+  if len(key) < len(cleartext):
+    print "WARN: Your key is shorter than the plaintext.  Falling back to a vigenere cipher..."
+    key = repeat_fill(key,len(cleartext))
+
   ciphertext=''
   for idx, val in enumerate(cleartext):
     msg_key = lookup_fwd[val] + lookup_fwd[key[idx]]
@@ -56,14 +62,18 @@ def otp_encrypt(cleartext, key, lookup_fwd, lookup_rev):
     ciphertext+=lookup_rev[modded]
   return ciphertext
 
-def otp_decrypt(ciphertext, key, lookup_fwd, lookup_rev):
-  """sample usage: cleartext = otp_encrypt('EQNVZ','XMCKL', lookupa0, lookup0a)
-  key must be >= len(ciphertext)"""
+def otp_decrypt(ciphertext, key, lookup_fwd=lookupa0, lookup_rev=lookup0a):
+  """sample usage: cleartext = otp_encrypt('EQNVZ','XMCKL', lookupa1, lookup1a)"""
+
+  if len(key) < len(ciphertext):
+    print "WARN: Your key is shorter than the plaintext.  Falling back to a vigenere cipher..."
+    key = repeat_fill(key,len(ciphertext))
+
   cleartext=''
   for idx, val in enumerate(ciphertext):
-    cipher_key = lookupa0[val] - lookupa0[key[idx]]
+    cipher_key = lookup_fwd[val] - lookup_fwd[key[idx]]
     modded = cipher_key % 26
-    cleartext+=lookup0a[modded]
+    cleartext+=lookup_rev[modded]
   return cleartext
   
   
