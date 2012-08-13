@@ -13,7 +13,7 @@ Python 2.7+ or 3.0+
 
 Status
 ------
-Basic encrypt/decrypt functionality for OTP/veneire and caeser including brute force techniques
+Basic encrypt/decrypt functionality for OTP/Vigenere and caeser including brute force techniques
 
 Todo
 ----

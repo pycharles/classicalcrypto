@@ -13,10 +13,36 @@ lookup0a = {i : chr(65+i) for i in range(0,26)}   # 0:A, 1:B, etc
 lookupa0 = {chr(64+i):i-1 for i in range(1,27)}   # A:0, B:1, etc 
 
 
+# Common functions
+def normalize(text, norm=[]):
+  'normalizes input based upon arguments'
+  if 'upper' in norm and text.isupper() == False:
+    print "Converting to uppercase..."
+    text=text.upper()
+  if 'alpha' in norm and text.isalpha() == False:
+    print "Stripping non-alpha..."
+    text=filter(str.isalpha, text)
+  return text
 
-def get_alpha(everything):
-  'returns alpha only'
-  return filter(str.isalpha, everything)
+
+# Caeser
+def caeser(text, rotate=None):
+  'Rotate each character X times.  Brute force rot0-rot26 if rotate arg is not specified.'
+  
+  n_text = normalize(text, ['upper','alpha'] ) #Normalize input
+
+  # Rotate once if rotate arg is specified, othersise all combinations
+  if rotate != None:
+    return ''.join([chr((((ord(i)-65+rotate)%26)+65)) for i in n_text])
+  else:
+    outdi={}
+    for r in range(27):
+      outdi[r] = ''.join([chr((((ord(i)-65+r)%26)+65)) for i in n_text])
+    return outdi
+
+
+
+
 
 
 
@@ -55,8 +81,3 @@ def otp_decrypt(ciphertext, key, lookup_fwd, lookup_rev):
 #ofp.write(chaff)
 
 
-def caeser_brute(text):
-  'this function rot1-rot25s the input text (& converts to uppercase)'
-  for r in range(27):
-    print "\n %s - " % r,
-    for i in text.upper(): print chr((((ord(i)-65+r)%26)+65)),
