@@ -15,7 +15,7 @@ lookupa0 = {chr(64+i):i-1 for i in range(1,27)}   # A:0, B:1, etc
 
 # Common functions
 def normalize(text, norm=[]):
-  'normalizes input based upon arguments'
+  """normalizes input based upon arguments"""
   if 'upper' in norm and text.isupper() == False:
     print "WARN: Converting to uppercase..."
     text=text.upper()
@@ -25,7 +25,7 @@ def normalize(text, norm=[]):
   return text
 
 def repeat_fill(text_in, length):
-  'repeat (or truncate) a string to a new length'
+  """repeat (or truncate) a string to a new length"""
   a, b = divmod(length, len(text_in))
   return text_in * a + text_in[:b]
 
@@ -33,7 +33,7 @@ def repeat_fill(text_in, length):
 
 # Caeser cipher
 def caeser(text, rotate=None):
-  'Rotate each character X times.  Brute force rot0-rot26 if rotate arg is not specified.'  
+  """Rotate each character X times.  Brute force rot0-rot26 if rotate arg is not specified."""
   n_text = normalize(text, ['upper','alpha'] ) #Normalize input
 
   # Rotate once if rotate arg is specified, othersise all combinations
@@ -49,7 +49,7 @@ def caeser(text, rotate=None):
 
 # OTP and vegenere ciphers  
 def otp_encrypt(cleartext, key, lookup_fwd=lookupa0, lookup_rev=lookup0a):
-  "sample usage: ciphertext = otp_encrypt('HELLO', 'XMCKL', lookupa1, lookup1a)"
+  """sample usage: ciphertext = otp_encrypt('HELLO', 'XMCKL', lookupa1, lookup1a)"""
   
   if len(key) < len(cleartext):
     print "WARN: Your key is shorter than the plaintext.  Falling back to a vigenere cipher..."
@@ -76,18 +76,13 @@ def otp_decrypt(ciphertext, key, lookup_fwd=lookupa0, lookup_rev=lookup0a):
     cleartext+=lookup_rev[modded]
   return cleartext
   
-  
-  
-####BRUTE FORCE OTP
-#key = """ISOLVEMYPROBLEMSANDISEETHELIGHTWEGOTTAPLUGANDTHINKWEGOTTAFEEDITRIGHTTHEREAINTNODANGERWECANGOTOFARWESTARTBELIEVINGNOWTHATWECANBEWHOWEAREGREASEISTHEWORDTHEYTHINKOURLOVEISJUSTAGROWINGPAINWHYDONTTHEYUNDERSTANDITSJUSTACRYINGSHAMETHEIRLIPSARELYINGONLYREALISREALWESTARTTOFINDRIGHTNOWWEGOTTOBEWHATWEFEELGREASEISTHEWORDGREASEISTHEWORDISTHEWORDTHATYOUHEARDITSGOTGROOVEITSGOTMEANINGGREASEISTHETIMEISTHEPLACEISTHEMOTIONGREASEISTHEWAYWEAREFEELINGWETAKETHEPRESSUREANDWETHROWAWAYCONVENTIONALITYBELONGSTOYESTERDAYTHEREISACHANCETHATWECANMAKEITSOFARWESTARTBELIEVINGNOWTHATWECANBEWOWEAREGREASEISTHEWORDGREASEISTHEWORDISTHEWORDTHATYOUHEARDITSGOTGROOVEITSGOTMEANINGGREASEISTHETIMEISTHEPLACEISTHEMOTIONGREASEISTHEWAYWEAREFEELINGTHISISTHELIFEOFILLUSIONWRAPPEDUPINTROUBLELACEDWITHCONFUSIONWHATWEDOINGHEREWETAKETHEPRESSUREANDWETHROWAWAYCONVENTIONALITYBELONGSTOYESTERDAYTHEREISACHANCETHATWECANMAKEITSOFARWESTARTBELIEVINGNOWTHATWECANBEWHOWEAREGREASEISTHEWORDGREASEISTHEWORDISTHEWORDTHATYOUHEARDITSGOTGROOVEITSGOTMEANINGGREASEISTHETIMEISTHEPLACEISTHEMOTIONGREASEISTHEWAYWEAREFEELINGGREASEISTHEWORDISTHEWORDTHATYOUHEARDITSGOTGROOVEITSGOTMEANINGGREASEISTHETIMEISTHEPLACEISTHEMOTIONGREASEISTHEWAYWEAREFEELING"""
-#ciphertext = "XTEZPTPRPBFGTBOJPKYEAAZPXOBFTYAPWMERMMSDBFJGQUGBAMHNWSEKTSPVIVFAXFJ"
+def otp_brute_force(ciphertext, key_within):
+  """Try all possible keys within a block of text based upon the size of the ciphertext"""
 
-#chaff=''
-#for i in range(len(key)-len(ciphertext)):
-#  chaff+= otp_decrypt(ciphertext,key[i:], lookupa0, lookup0a)+'\n'
-
-#write each decryption attempt to a line & output to a file for easy viewing/searching/grepping
-#ofp = open('out.txt','w')   
-#ofp.write(chaff)
+  haystack = [otp_decrypt(ciphertext,key_within[i:], lookupa0, lookup0a) for i in range(len(key_within)-len(ciphertext))]
+  #with open('otp.txt','w') as f:
+  #  f.write('\n'.join(haystack))
+  return haystack
+  
 
 
